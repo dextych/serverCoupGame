@@ -1,6 +1,6 @@
 import express from 'express';
 import { config } from './config/config.js';
-import { initDb} from './src/models/index.js';
+import { initDb } from './src/models/index.js';
 
 const app = express();
 

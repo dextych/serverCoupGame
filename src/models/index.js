@@ -1,10 +1,11 @@
-import sequelize from "../../config/sequelize.js";
+import sequelize from '../../config/sequelize.js';
+import User from './user.model.js';
 
 const models = {
-
+    User
 };
 
-export async function initDb() {
+async function initDb() {
     try {
         await sequelize.sync({alter: true});
         console.log('База данных инициализирована!');
@@ -12,3 +13,8 @@ export async function initDb() {
         console.error('Ошибка инициализации БД', error);
     }
 };
+
+export {
+    initDb,
+    User
+}
