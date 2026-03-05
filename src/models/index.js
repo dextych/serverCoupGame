@@ -1,20 +1,36 @@
+import path from 'path';
+import { pathToFileURL } from 'url';
+import Sequelize from 'sequelize';
+import { readdir } from 'fs/promises';
+import { config } from '../../config/config.js';
 import sequelize from '../../config/sequelize.js';
-import User from './user.model.js';
 
-const models = {
-    User
-};
+const __dirname = config.modelsDir;
+const basename = 'index.js';
+const db = { Sequelize, sequelize };
 
-async function initDb() {
-    try {
-        await sequelize.sync({alter: true});
-        console.log('База данных инициализирована!');
-    } catch (error) {
-        console.error('Ошибка инициализации БД', error);
-    }
-};
+async function initDb () {
+    const fileNames = (await readdir(__dirname)).filter(file => file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js')
+    const modelsInitFunc = (await Promise.all(
+        fileNames.map(async fileName => {
+            const filePath = path.resolve(__dirname, fileName);
+            const fileUrl = pathToFileURL(filePath);
+            return import(fileUrl.href);
+        })
+    )).map(o => o.default);
+    const models = modelsInitFunc.map(modelInit => {
+        return modelInit(sequelize, Sequelize)
+    });
 
-export {
-    initDb,
-    User
+    models.forEach(model => {
+        if(model.associate){
+            model.associate(sequelize.models)
+        }
+        db[model.name] = model
+    });
+    
+    await sequelize.sync({alter: true});
+
+    return db;
 }
+export default await initDb();
