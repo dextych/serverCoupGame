@@ -41,5 +41,27 @@ export default (sequelize, DataTypes) => {
       tableName: 'Users',
   });
 
+    // Ассоциации
+  User.associate = (models) => {
+    User.hasMany(models.Lobby, {
+      foreignKey: 'hostId',
+      as: 'hostedLobbies'
+    });
+    
+    // User может участвовать во многих лобби (через участников)
+    User.belongsToMany(models.Lobby, {
+      through: models.LobbyParticipant,
+      foreignKey: 'userId',
+      otherKey: 'lobbyId',
+      as: 'joinedLobbies'
+    });
+    
+    // User имеет много записей в участниках лобби
+    User.hasMany(models.LobbyParticipant, {
+      foreignKey: 'userId',
+      as: 'participations'
+    });
+  };
+
   return User;
 };

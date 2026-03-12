@@ -8,16 +8,6 @@ export const generateToken = (payload) => {
 };
 
 export const verifyToken = (token) => {
-    if(!token){   //мб не надо?
-        return {
-            success: false,
-            error: {
-                message: 'Токен не предоставлен',
-                code: 'ERR_NO_TOKEN',
-                status: 401
-            }
-        };
-    }
     return jwt.verify(token, config.jwt.secret);
 }
 
