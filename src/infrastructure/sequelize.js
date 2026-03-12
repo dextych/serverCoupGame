@@ -1,6 +1,8 @@
 import db from '../models/index.js';
 export { Op, QueryTypes, Sequelize } from 'sequelize';
 
+export default db;
+
 export async function executeInTransaction(callback) {
     const transaction = await db.sequelize.transaction();
     try {
